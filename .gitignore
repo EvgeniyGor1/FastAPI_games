@@ -1,3 +1,4 @@
 # FastAPI_games
 .idea
-.venv
+__pycache__
+.env
