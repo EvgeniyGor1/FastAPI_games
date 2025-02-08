@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "fastapi-games"
+version = "0.1.0"
+description = "Simple backend"
+authors = ["Evgeniy <gorlow.jenya@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sqlalchemy = "^2.0.36"
+pydantic-settings = "^2.6.0"
+sqlmodel = "^0.0.22"
+uvicorn = "^0.32.0"
+fastapi = {version = "^0.115.3", extras = ["standard"]}
+alembic = "^1.13.3"
+asyncpg = "^0.30.0"
+tenacity = "^9.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+pytest = "^8.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
