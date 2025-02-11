@@ -29,17 +29,17 @@ class UserRegister(SQLModel):
 
 class GameBase(SQLModel):
     name: str
-    cover_id: uuid.UUID = Field(foreign_key="GameCover.id", ondelete="CASCADE")
-
-    cover: "GameCover" = Relationship(back_populates="game")
 
 
 class Game(GameBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(max_length=255)
+    cover_id: uuid.UUID = Field(foreign_key="cover.id", ondelete="CASCADE")
+
+    cover: "Cover" = Relationship(back_populates="game")
 
 
-class GameCover(SQLModel, table=True):
+class Cover(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     path: str = Field(nullable=False, sa_type=AutoString)
     game_id: uuid.UUID = Field(
