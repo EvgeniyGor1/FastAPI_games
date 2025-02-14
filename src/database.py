@@ -1,4 +1,3 @@
-from asyncio import current_task
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
@@ -10,11 +9,10 @@ from sqlalchemy.ext.asyncio import (
 from src.config import settings
 
 
-engine = create_async_engine(settings.DATABASE_URI)
+engine = create_async_engine(settings.DATABASE_URI, echo=True)
 async_session_maker = async_sessionmaker(
     engine,
-    xpire_on_commit=False,
-    echo=True,
+    expire_on_commit=False,
 )
 
 

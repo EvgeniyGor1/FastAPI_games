@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from dotenv import load_dotenv
 from pydantic import computed_field
 from pydantic_core import MultiHostUrl

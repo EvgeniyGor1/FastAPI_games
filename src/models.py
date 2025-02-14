@@ -1,12 +1,12 @@
-import datetime
+from datetime import datetime, timezone as tz
 import uuid
-from typing import Annotated
 
 from pydantic import EmailStr
-from sqlmodel import SQLModel, Field, AutoString, Relationship
+from sqlmodel import SQLModel, Field, AutoString, Relationship, DateTime, Column
 
 
 class UserBase(SQLModel):
+    username: str
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     is_active: bool = True
     is_superuser: bool = False
@@ -14,9 +14,10 @@ class UserBase(SQLModel):
 
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    hashed_password: str = Field
-    registered_at: datetime.datetime = Field(
-        default_factory=lambda: datetime.datetime.now(datetime.UTC)
+    hashed_password: str
+    registered_at: datetime = Field(
+        sa_column=Column(DateTime(timezone=True)),
+        default_factory=lambda: datetime.now(tz.utc),
     )
 
 
@@ -26,6 +27,10 @@ class UserRegister(SQLModel):
     password: str = Field(min_length=8, max_length=40)
 
 
+class UserPublic(UserBase):
+    id: uuid.UUID
+
+
 class GameBase(SQLModel):
     name: str
 
@@ -33,7 +38,6 @@ class GameBase(SQLModel):
 class Game(GameBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(max_length=255)
-    cover_id: uuid.UUID = Field(foreign_key="cover.id")
 
     cover: "Cover" = Relationship(back_populates="game", cascade_delete=True)
 

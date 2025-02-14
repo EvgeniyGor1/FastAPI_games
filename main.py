@@ -2,10 +2,12 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from src.api_v1 import user
 
 
 app = FastAPI(title="Games_app")
 
+app.include_router(user.router)
 
 app.mount("/static", StaticFiles(directory="src/templates/static"), name="static")
 templates = Jinja2Templates(directory="src/templates")
