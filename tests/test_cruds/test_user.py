@@ -9,7 +9,7 @@ from src.database import async_session_maker
 from src.models import User, UserRegister
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(loop_scope="session")
 def event_loop():
     loop = asyncio.new_event_loop()
     yield loop
@@ -25,7 +25,7 @@ async def session():
 
 @pytest.mark.asyncio
 @pytest.mark.once
-async def test_create_user():
+async def test_create_user(session):
     user_test = UserRegister(
         username="test_user", email="test@example.com", password="testtest"
     )
