@@ -2,12 +2,13 @@ from typing import Annotated
 import uuid
 
 from fastapi import APIRouter, status, Depends, HTTPException
+from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api_v1.user import cruds
 from src.api_v1.user.cruds import get_user_by_email
 from src.database import session_dependency
-from src.models import UserRegister, UserPublic
+from src.models.user import UserRegister, UserPublic, User
 
 router = APIRouter(tags=["user"])
 
@@ -32,13 +33,22 @@ async def create_user(
     return user
 
 
-@router.get("/", response_model=UserPublic)
+@router.get("/users_list", response_model=list[User])
 async def get_users(
     session: Annotated[AsyncSession, Depends(session_dependency)],
     limit: int = 10,
 ):
 
     return await cruds.get_users(session, limit)
+
+
+@router.get("/", response_model=UserPublic)
+async def get_user_by_email(
+    session: Annotated[AsyncSession, Depends(session_dependency)],
+    email: EmailStr,
+):
+
+    return await cruds.get_user_by_email(session, email)
 
 
 @router.get("/{user_id}", response_model=UserPublic)
@@ -50,7 +60,7 @@ async def get_user_by_id(
     return await cruds.get_user_by_id(session, user_id)
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_200_OK)
+@router.delete("/", status_code=status.HTTP_200_OK)
 async def delete_user_no_authorization(
     session: Annotated[AsyncSession, Depends(session_dependency)],
     user_id: uuid.UUID,

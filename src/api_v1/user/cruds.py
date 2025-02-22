@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select, delete
 
-from src.models import UserRegister, User
+from src.models.user import UserRegister, User
 from src.security import get_password_hash
 
 
