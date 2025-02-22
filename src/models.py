@@ -17,7 +17,7 @@ class User(UserBase, table=True):
     hashed_password: str
     registered_at: datetime = Field(
         sa_column=Column(DateTime(timezone=True)),
-        default_factory=lambda: datetime.now(tz.utc),
+        default_factory=lambda: datetime.now(tz.utc).replace(microsecond=0),
     )
 
 
