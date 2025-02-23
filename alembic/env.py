@@ -10,7 +10,7 @@ from alembic import context
 sys.path = ["", ".."] + sys.path[1:]
 
 from src.config import settings  # noqa
-from src.models import SQLModel  # noqa
+from src.models import metadata  # noqa
 
 
 config = context.config
@@ -20,7 +20,7 @@ if config.config_file_name is not None:
 
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URI + "?async_fallback=True")
 
-target_metadata = SQLModel.metadata
+target_metadata = metadata
 
 
 def run_migrations_offline() -> None:
