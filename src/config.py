@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from dotenv import load_dotenv
 from pydantic import computed_field
 from pydantic_core import MultiHostUrl
@@ -29,4 +31,9 @@ class Config(BaseSettings):
         )
 
 
+class Constants(BaseSettings):
+    WORK_DIR: str = str(Path(__file__).parent.parent)
+
+
 settings = Config()
+constants = Constants()
