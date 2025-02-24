@@ -6,7 +6,7 @@ from sqlmodel import select
 
 from src.api_v1.user.cruds import get_user_by_email, create_user, get_user_by_id
 from src.database import async_session_maker
-from src.models import User, UserRegister
+from src.models.user import User, UserRegister
 
 
 @pytest_asyncio.fixture(loop_scope="session")
