@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class GameBase(SQLModel):
-    name: str = Field(max_length=255)
+    name: str = Field(max_length=255, unique=True, index=True)
     description: str
     price: Decimal
 
@@ -23,3 +23,7 @@ class Game(GameBase, table=True):
 
 class GameCreate(GameBase):
     id: uuid.UUID
+
+
+class GamePublic(GameBase):
+    pass

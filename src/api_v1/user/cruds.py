@@ -1,7 +1,8 @@
 import uuid
 
+from sqlalchemy import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import select, delete
+import sqlmodel as sm
 
 from src.models.user import UserRegister, User
 from src.security import get_password_hash
@@ -36,20 +37,20 @@ async def get_user_by_id(
 async def get_users(
     session: AsyncSession,
     users_limit: int = 10,
-) -> list[User]:
+) -> Sequence[User]:
 
-    stmt = select(User).limit(users_limit)
+    stmt = sm.select(User).limit(users_limit)
     users = await session.scalars(stmt)
 
     await session.commit()
-    return list(users.all())
+    return users.all()
 
 
 async def get_user_by_email(
     session: AsyncSession,
     email: str,
 ) -> User | None:
-    stmt = select(User).where(User.email == email)  # noqa ;Type checker bug?
+    stmt = sm.select(User).where(User.email == email)  # noqa ;Type checker bug?
 
     session_user = await session.execute(stmt)
     session_user = session_user.scalars().first()
@@ -57,11 +58,23 @@ async def get_user_by_email(
     return session_user
 
 
+async def get_user_by_name(
+    session: AsyncSession,
+    user_name: str,
+) -> User | None:
+
+    stmt = sm.select(User).where(User.username == user_name)  # noqa ;Type checker bug?
+
+    user = await session.scalars(stmt)
+    await session.commit()
+    return user.one_or_none()
+
+
 async def delete_user_no_authorization(
     session: AsyncSession,
     user_id: uuid.UUID,
 ) -> None:
 
-    stmt = delete(User).where(User.id == user_id)  # noqa ;Type checker bug?
+    stmt = sm.delete(User).where(User.id == user_id)  # noqa ;Type checker bug?
     await session.execute(stmt)
     await session.commit()

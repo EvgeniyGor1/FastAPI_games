@@ -11,10 +11,11 @@ from src.database import session_dependency
 from src.models.user import UserRegister, UserPublic, User
 
 router = APIRouter(tags=["user"])
+user_management = APIRouter(tags=["user management"])
 
 
 @router.post(
-    "/",
+    "/sign_up/",
     status_code=status.HTTP_201_CREATED,
     response_model=UserPublic,
 )
@@ -33,7 +34,10 @@ async def create_user(
     return user
 
 
-@router.get("/users_list", response_model=list[User])
+@user_management.get(
+    "/users_list/",
+    response_model=list[User],
+)
 async def get_users(
     session: Annotated[AsyncSession, Depends(session_dependency)],
     limit: int = 10,
@@ -42,7 +46,10 @@ async def get_users(
     return await cruds.get_users(session, limit)
 
 
-@router.get("/", response_model=UserPublic)
+@router.get(
+    "/{email}/",
+    response_model=UserPublic,
+)
 async def get_user_by_email(
     session: Annotated[AsyncSession, Depends(session_dependency)],
     email: EmailStr,
@@ -51,7 +58,10 @@ async def get_user_by_email(
     return await cruds.get_user_by_email(session, email)
 
 
-@router.get("/{user_id}", response_model=UserPublic)
+@router.get(
+    "/{id}/",
+    response_model=UserPublic,
+)
 async def get_user_by_id(
     session: Annotated[AsyncSession, Depends(session_dependency)],
     user_id: uuid.UUID,
@@ -60,7 +70,22 @@ async def get_user_by_id(
     return await cruds.get_user_by_id(session, user_id)
 
 
-@router.delete("/", status_code=status.HTTP_200_OK)
+@router.get(
+    "/{user_name}/",
+    response_model=UserPublic,
+)
+async def get_user_by_name(
+    session: Annotated[AsyncSession, Depends(session_dependency)],
+    user_name: str,
+):
+
+    return await cruds.get_user_by_name(session, user_name)
+
+
+@user_management.delete(
+    "/delete/",
+    status_code=status.HTTP_200_OK,
+)
 async def delete_user_no_authorization(
     session: Annotated[AsyncSession, Depends(session_dependency)],
     user_id: uuid.UUID,

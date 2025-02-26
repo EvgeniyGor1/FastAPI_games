@@ -6,15 +6,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api_v1.game import cruds
 from src.database import session_dependency
-from src.models.game import Game, GameCreate, GameBase
+from src.models.game import Game, GameBase
 
 router = APIRouter(tags=["game"])
+game_management = APIRouter(tags=["game management"])
 
 
-@router.post(
-    "/",
+@game_management.post(
+    "/load_game/",
     status_code=status.HTTP_201_CREATED,
-    response_model=GameCreate,
+    response_model=Game,
 )
 async def load_game_in_db(
     session: Annotated[AsyncSession, Depends(session_dependency)],
@@ -31,12 +32,42 @@ async def load_game_in_db(
     return game
 
 
+@game_management.delete(
+    "/delete_game/",
+    status_code=status.HTTP_200_OK,
+)
+async def delete_game_by_name(
+    session: Annotated[AsyncSession, Depends(session_dependency)],
+    game_name: str,
+):
+
+    await cruds.delete_game_by_name(session, game_name)
+    return "Game deleted"
+
+
 @router.get(
-    "/",
-    response_model=Game,
+    "/{game_name}/",
+    response_model=GameBase,
 )
 async def get_game_by_name(
     session: Annotated[AsyncSession, Depends(session_dependency)],
-    game: Game,
+    game_name: str,
 ):
-    pass
+
+    game = await cruds.get_game_by_name(session, game_name)
+    if not game:
+        return status.HTTP_404_NOT_FOUND
+
+    return game
+
+
+@router.get(
+    "/list/",
+    response_model=list[GameBase],
+)
+async def get_games(
+    session: Annotated[AsyncSession, Depends(session_dependency)],
+    limit: int,
+):
+
+    return await cruds.get_games(session, limit)
