@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlmodel as sm
 
 from src.models.user import UserRegister, User
-from src.security import get_password_hash
+from src.api_v1.security import get_password_hash
 
 
 async def create_user(

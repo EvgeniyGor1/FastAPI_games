@@ -1,4 +1,5 @@
 from typing import AsyncGenerator
+import logging
 
 from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
@@ -8,6 +9,9 @@ from sqlalchemy.ext.asyncio import (
 
 from src.config import settings
 
+
+logging.basicConfig()
+logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
 engine = create_async_engine(settings.DATABASE_URI, echo=True)
 async_session_maker = async_sessionmaker(
@@ -21,6 +25,6 @@ async def session_dependency() -> AsyncSession:
         yield session
 
 
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+async def get_async_session() -> AsyncSession:
     async with async_session_maker() as session:
-        yield session
+        return session

@@ -19,7 +19,7 @@ async def create_game(
 ) -> Game:
 
     _id = uuid.uuid4()
-    cover_path = constants.WORK_DIR + f"\\images\\covers\\{_id}.png"
+    cover_path = constants.WORK_DIR + f"images\\covers\\{_id}.png"
     game = Game.model_validate(game, update={"id": _id, "cover_path": cover_path})
     await create_img_file(game.cover_path)
     try:

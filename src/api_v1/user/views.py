@@ -2,7 +2,7 @@ from typing import Annotated
 import uuid
 
 from fastapi import APIRouter, status, Depends, HTTPException
-from pydantic import EmailStr
+from pydantic import EmailStr, PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api_v1.user import cruds
@@ -40,13 +40,13 @@ async def create_user(
 )
 async def get_users(
     session: Annotated[AsyncSession, Depends(session_dependency)],
-    limit: int = 10,
+    limit: PositiveInt = 10,
 ):
 
     return await cruds.get_users(session, limit)
 
 
-@router.get(
+@user_management.get(
     "/{email}/",
     response_model=UserPublic,
 )
@@ -59,7 +59,7 @@ async def get_user_by_email(
 
 
 @router.get(
-    "/{id}/",
+    "/id/{id}/",
     response_model=UserPublic,
 )
 async def get_user_by_id(
@@ -71,7 +71,7 @@ async def get_user_by_id(
 
 
 @router.get(
-    "/{user_name}/",
+    "/profile/{user_name}/",
     response_model=UserPublic,
 )
 async def get_user_by_name(

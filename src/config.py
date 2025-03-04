@@ -1,16 +1,19 @@
 from pathlib import Path
 
-from dotenv import load_dotenv
 from pydantic import computed_field
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-load_dotenv()
+class Constants(BaseSettings):
+    WORK_DIR: str = str(Path(__file__).parent.parent) + "\\"
+
+
+constants = Constants()
 
 
 class Config(BaseSettings):
-    model_config = SettingsConfigDict(env_file="./.env")
+    model_config = SettingsConfigDict(env_file=constants.WORK_DIR + ".env")
     DB_HOST: str
     DB_PORT: int
     DB_USER: str
@@ -31,9 +34,4 @@ class Config(BaseSettings):
         )
 
 
-class Constants(BaseSettings):
-    WORK_DIR: str = str(Path(__file__).parent.parent)
-
-
 settings = Config()
-constants = Constants()

@@ -6,7 +6,7 @@ from sqlmodel import SQLModel, Field, DateTime, Column
 
 
 class UserBase(SQLModel):
-    username: str
+    username: str = Field(unique=True, index=True)  # Test index
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     is_active: bool = True
     is_superuser: bool = False
@@ -14,7 +14,7 @@ class UserBase(SQLModel):
 
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    hashed_password: str
+    hashed_password: bytes = Field(nullable=False)
     registered_at: datetime = Field(
         sa_column=Column(DateTime(timezone=True)),
         default_factory=lambda: datetime.now(tz.utc).replace(microsecond=0),

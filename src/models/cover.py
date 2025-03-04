@@ -15,6 +15,7 @@ class Cover(SQLModel, table=True):
         foreign_key="game.id",
         nullable=False,
         ondelete="CASCADE",
+        index=True,
     )
 
     game: Game = Relationship(back_populates="cover")

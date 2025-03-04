@@ -56,7 +56,10 @@ async def get_game_by_name(
 
     game = await cruds.get_game_by_name(session, game_name)
     if not game:
-        return status.HTTP_404_NOT_FOUND
+        return HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The game is not found",
+        )
 
     return game
 
