@@ -5,13 +5,17 @@ from fastapi import APIRouter, status, Depends, HTTPException
 from pydantic import EmailStr, PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.api_v1.auth.deps import validate_admin
 from src.api_v1.user import cruds
 from src.api_v1.user.cruds import get_user_by_email
 from src.database import session_dependency
 from src.models.user import UserRegister, UserPublic, User
 
 router = APIRouter(tags=["user"])
-user_management = APIRouter(tags=["user management"])
+user_management = APIRouter(
+    tags=["user management"],
+    dependencies=[Depends(validate_admin)],
+)
 
 
 @router.post(
@@ -86,7 +90,7 @@ async def get_user_by_name(
     "/delete/",
     status_code=status.HTTP_200_OK,
 )
-async def delete_user_no_authorization(
+async def delete_user(
     session: Annotated[AsyncSession, Depends(session_dependency)],
     user_id: uuid.UUID,
 ):

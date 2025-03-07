@@ -4,12 +4,16 @@ from typing import Annotated
 from fastapi import APIRouter, status, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.api_v1.auth.deps import validate_admin
 from src.api_v1.game import cruds
 from src.database import session_dependency
 from src.models.game import Game, GameBase
 
 router = APIRouter(tags=["game"])
-game_management = APIRouter(tags=["game management"])
+game_management = APIRouter(
+    tags=["game management"],
+    dependencies=[Depends(validate_admin)],
+)
 
 
 @game_management.post(

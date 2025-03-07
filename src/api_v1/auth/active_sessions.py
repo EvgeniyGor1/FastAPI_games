@@ -5,7 +5,7 @@ active_sessions: dict[str, User] = {}
 
 
 async def create_user_session(user: User) -> str:
-    """Return session id"""
+    """Generate and return session id"""
 
     session_id = await generate_session_id()
     active_sessions[session_id] = user

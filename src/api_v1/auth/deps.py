@@ -1,4 +1,3 @@
-import secrets
 import uuid
 from typing import Annotated
 
@@ -40,7 +39,11 @@ async def get_session_id(request: Request) -> str:
     session_id = request.cookies.get(COOKIE_SESSION_ID_KEY)
 
     if not session_id:
-        raise HTTPException(status_code=401, detail="Session ID not found in cookies")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Login to proceed",
+            headers={"WWW-Authenticate": "Basic"},
+        )
 
     return session_id
 
@@ -53,6 +56,18 @@ async def get_current_session_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="not authenticated",
+            headers={"WWW-Authenticate": "Basic"},
         )
 
     return user
+
+
+async def validate_admin(
+    user: Annotated[User, Depends(get_current_session_user)],
+):
+
+    if not user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="unauthorized",
+        )

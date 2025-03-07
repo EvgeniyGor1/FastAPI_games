@@ -1,8 +1,10 @@
+from datetime import datetime, timezone, timedelta
+
 from fastapi import APIRouter, Depends, Response, Request
 
 from src.api_v1.auth.active_sessions import create_user_session, delete_user_session
 from src.api_v1.auth.deps import get_auth_user, get_current_session_user
-from src.api_v1.security import COOKIE_SESSION_ID_KEY
+from src.api_v1.security import COOKIE_SESSION_ID_KEY, COOKIE_MAX_AGE
 from src.models import User
 
 cookie_router = APIRouter(tags=["cookie"])
@@ -15,7 +17,12 @@ async def login(
 ):
 
     session_id = await create_user_session(auth_user)
-    response.set_cookie(COOKIE_SESSION_ID_KEY, session_id)
+    expire_at = datetime.now(timezone.utc) + timedelta(minutes=COOKIE_MAX_AGE)
+    response.set_cookie(
+        COOKIE_SESSION_ID_KEY,
+        session_id,
+        expires=expire_at,
+    )
     return {"result": "Logged"}
 
 

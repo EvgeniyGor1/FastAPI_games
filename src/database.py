@@ -1,4 +1,3 @@
-from typing import AsyncGenerator
 import logging
 
 from sqlalchemy.ext.asyncio import (
@@ -23,8 +22,3 @@ async_session_maker = async_sessionmaker(
 async def session_dependency() -> AsyncSession:
     async with async_session_maker() as session:
         yield session
-
-
-async def get_async_session() -> AsyncSession:
-    async with async_session_maker() as session:
-        return session

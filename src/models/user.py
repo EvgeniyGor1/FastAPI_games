@@ -30,3 +30,8 @@ class UserRegister(SQLModel):
 class UserPublic(SQLModel):
     username: str
     email: EmailStr = Field(unique=True, index=True, max_length=255)
+
+
+class Cookies:
+    user: User
+    expire_at: datetime

@@ -1,6 +1,7 @@
 import bcrypt
 
 COOKIE_SESSION_ID_KEY = "web-app-session-id"
+COOKIE_MAX_AGE = 60 * 60 * 24  # In minutes
 
 
 def get_password_hash(password: str | bytes) -> bytes:
