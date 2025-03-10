@@ -1,10 +1,9 @@
 [tool.poetry]
-name = "fastapi-games"
+name = "fastapi_games"
 version = "0.1.0"
 description = "Simple backend"
 authors = ["Evgeniy <gorlow.jenya@gmail.com>"]
 license = "MIT"
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -20,6 +19,7 @@ bcrypt = "^4.2.1"
 pytest-asyncio = "^0.25.3"
 pytest = "^8.3.4"
 pillow = "^11.1.0"
+uv = "^0.6.5"
 
 
 [tool.poetry.group.dev.dependencies]
