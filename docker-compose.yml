@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:17
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      DB_HOST: db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+  app:
+    image: fastapi_games
+    stdin_open: true
+    tty: true
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      DB_HOST: db
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - backend
+    command:
+      - /FastAPI_games/src/scripts/start.sh
+
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
+    driver: bridge
