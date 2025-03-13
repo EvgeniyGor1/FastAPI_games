@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 from pydantic import computed_field
 from pydantic_core import MultiHostUrl
@@ -6,7 +7,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Constants(BaseSettings):
-    WORK_DIR: str = str(Path(__file__).parent.parent) + "\\"
+    if os.name == "nt":
+        WORK_DIR: str = str(Path(__file__).parent.parent) + "\\"
+    else:
+        WORK_DIR: str = str(Path(__name__).parent.parent) + "/"
 
 
 constants = Constants()
@@ -34,4 +38,4 @@ class Config(BaseSettings):
         )
 
 
-settings = Config()
+settings = Config()  # noqa
