@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.api_v1.auth.deps import validate_admin
 from src.api_v1.game import cruds
 from src.database import session_dependency
-from src.models.game import Game, GameBase
+from src.models.game import Game, GameBase, GamePublic
 
 router = APIRouter(tags=["game"])
 game_management = APIRouter(
@@ -50,7 +50,7 @@ async def delete_game_by_name(
 
 
 @router.get(
-    "/{game_name}/",
+    "/name/{game_name}/",
     response_model=GameBase,
 )
 async def get_game_by_name(
@@ -70,11 +70,11 @@ async def get_game_by_name(
 
 @router.get(
     "/list/",
-    response_model=list[GameBase],
+    response_model=list[GamePublic],
 )
 async def get_games(
     session: Annotated[AsyncSession, Depends(session_dependency)],
-    limit: int,
+    limit: int = 100,
 ):
 
     return await cruds.get_games(session, limit)

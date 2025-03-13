@@ -58,11 +58,11 @@ async def get_game_by_name(
 
 async def get_games(
     session: Annotated[AsyncSession, Depends(session_dependency)],
-    _limit: int = 100,
-) -> Sequence[Game]:
+    _limit: int,
+) -> list[GamePublic]:
 
-    stmt = (
-        sm.select(GamePublic).limit(_limit).order_by(Game.name)
-    )  # noqa ;Type checker bug?
-    games = await session.execute(stmt)
-    return games.all()
+    stmt = sm.select(Game).limit(_limit)  # noqa ;Type checker bug?
+    games = await session.scalars(stmt)
+    games = games.all()
+    games = [GamePublic(**game.model_dump()) for game in games]
+    return games
