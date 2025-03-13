@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials, HTTPBasic
 from starlette import status
 
-from src.api_v1.auth.active_sessions import active_sessions
+from src.api_v1.auth.active_sessions import get_session_user
 from src.api_v1.security import COOKIE_SESSION_ID_KEY, validate_password
 from src.database import async_session_maker
 from src.api_v1.user.cruds import get_user_by_name
@@ -51,7 +51,7 @@ async def get_session_id(request: Request) -> str:
 async def get_current_session_user(
     session_id: str = Depends(get_session_id),
 ) -> (uuid.UUID, User):
-    user = active_sessions.get(session_id)
+    user = await get_session_user(session_id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

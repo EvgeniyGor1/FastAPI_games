@@ -15,3 +15,7 @@ async def create_user_session(user: User) -> str:
 async def delete_user_session(session_id: str) -> None:
 
     active_sessions.pop(session_id)
+
+
+async def get_session_user(session_id: str) -> User:
+    return active_sessions.get(session_id)
