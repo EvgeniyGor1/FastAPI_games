@@ -5,7 +5,7 @@ from fastapi import APIRouter, status, Depends, HTTPException
 from pydantic import EmailStr, PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api_v1.auth.deps import validate_admin
+from src.api_v1.auth.deps import admin_permission
 from src.api_v1.user import cruds
 from src.api_v1.user.cruds import get_user_by_email
 from src.database import session_dependency
@@ -14,7 +14,7 @@ from src.models.user import UserRegister, UserPublic, User
 router = APIRouter(tags=["user"])
 user_management = APIRouter(
     tags=["user management"],
-    dependencies=[Depends(validate_admin)],
+    dependencies=[Depends(admin_permission)],
 )
 
 
@@ -35,6 +35,8 @@ async def create_user(
             detail="The user with this email already exists in the system.",
         )
     user = await cruds.create_user(session, user_in)
+    await session.commit()
+    await session.refresh(user)
     return user
 
 
@@ -46,8 +48,9 @@ async def get_users(
     session: Annotated[AsyncSession, Depends(session_dependency)],
     limit: PositiveInt = 10,
 ):
-
-    return await cruds.get_users(session, limit)
+    users = await cruds.get_users(session, limit)
+    await session.commit()
+    return users
 
 
 @user_management.get(
@@ -58,8 +61,8 @@ async def get_user_by_email(
     session: Annotated[AsyncSession, Depends(session_dependency)],
     email: EmailStr,
 ):
-
-    return await cruds.get_user_by_email(session, email)
+    user = await cruds.get_user_by_email(session, email)
+    return user
 
 
 @router.get(
@@ -71,7 +74,9 @@ async def get_user_by_id(
     user_id: uuid.UUID,
 ):
 
-    return await cruds.get_user_by_id(session, user_id)
+    user = await cruds.get_user_by_id(session, user_id)
+    await session.commit()
+    return user
 
 
 @router.get(
@@ -83,7 +88,9 @@ async def get_user_by_name(
     user_name: str,
 ):
 
-    return await cruds.get_user_by_name(session, user_name)
+    user = await cruds.get_user_by_name(session, user_name)
+    await session.commit()
+    return user
 
 
 @user_management.delete(
@@ -96,5 +103,6 @@ async def delete_user(
 ):
 
     await cruds.delete_user_no_authorization(session, user_id)
+    await session.commit()
 
     return "User successfully deleted"

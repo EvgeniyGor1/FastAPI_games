@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, status, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api_v1.auth.deps import validate_admin
+from src.api_v1.auth.deps import admin_permission
 from src.api_v1.game import cruds
 from src.database import session_dependency
 from src.models.game import Game, GameBase, GamePublic
@@ -12,7 +12,7 @@ from src.models.game import Game, GameBase, GamePublic
 router = APIRouter(tags=["game"])
 game_management = APIRouter(
     tags=["game management"],
-    dependencies=[Depends(validate_admin)],
+    dependencies=[Depends(admin_permission)],
 )
 
 
@@ -33,6 +33,8 @@ async def load_game_in_db(
             detail="The game name already exists in the database.",
         )
     game = await cruds.create_game(session, game)
+    await session.commit()
+    await session.refresh(game)
     return game
 
 
@@ -46,6 +48,7 @@ async def delete_game_by_name(
 ):
 
     await cruds.delete_game_by_name(session, game_name)
+    await session.commit()
     return "Game deleted"
 
 
@@ -59,6 +62,7 @@ async def get_game_by_name(
 ):
 
     game = await cruds.get_game_by_name(session, game_name)
+    await session.commit()
     if not game:
         return HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -77,4 +81,6 @@ async def get_games(
     limit: int = 100,
 ):
 
-    return await cruds.get_games(session, limit)
+    games = await cruds.get_games(session, limit)
+    await session.commit()
+    return games

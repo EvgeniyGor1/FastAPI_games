@@ -1,5 +1,6 @@
 import uuid
 
+from pydantic import EmailStr
 from sqlalchemy import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 import sqlmodel as sm
@@ -18,8 +19,6 @@ async def create_user(
     )
     session.add(user)
 
-    await session.commit()
-    await session.refresh(user)
     return user
 
 
@@ -30,7 +29,6 @@ async def get_user_by_id(
 
     user = await session.get(User, user_id)
 
-    await session.commit()
     return user
 
 
@@ -42,20 +40,20 @@ async def get_users(
     stmt = sm.select(User).limit(users_limit)
     users = await session.scalars(stmt)
 
-    await session.commit()
     return users.all()
 
 
 async def get_user_by_email(
     session: AsyncSession,
-    email: str,
+    email: EmailStr | str,
 ) -> User | None:
+
     stmt = sm.select(User).where(User.email == email)  # noqa ;Type checker bug?
 
-    session_user = await session.execute(stmt)
-    session_user = session_user.scalars().first()
-    await session.commit()
-    return session_user
+    user = await session.execute(stmt)
+    user = user.scalars().first()
+
+    return user
 
 
 async def get_user_by_name(
@@ -66,7 +64,6 @@ async def get_user_by_name(
     stmt = sm.select(User).where(User.username == user_name)  # noqa ;Type checker bug?
 
     user = await session.scalars(stmt)
-    await session.commit()
     return user.one_or_none()
 
 
@@ -77,4 +74,3 @@ async def delete_user_no_authorization(
 
     stmt = sm.delete(User).where(User.id == user_id)  # noqa ;Type checker bug?
     await session.execute(stmt)
-    await session.commit()

@@ -24,8 +24,6 @@ async def create_game(
     await create_img_file(game.cover_path)
     try:
         session.add(game)
-        await session.commit()
-        await session.refresh(game)
         return game
     except Exception:
         await delete_img_file(game.cover_path)
@@ -38,7 +36,6 @@ async def delete_game_by_name(
 
     stmt = sm.delete(Game).where(Game.name == game_name)  # noqa ;Type checker bug?
     await session.execute(stmt)
-    await session.commit()
 
 
 async def get_game_by_name(
@@ -49,7 +46,6 @@ async def get_game_by_name(
     stmt = sm.select(Game).where(Game.name == game_name)  # noqa ;Type checker bug?
     game = await session.scalars(stmt)
     game = game.first()
-    await session.commit()
     if game:
         return GameBase.model_validate(game)
 
