@@ -6,15 +6,16 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
 )
 
-from src.config import settings
+from src.config import db_settings
 
 
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
-engine = create_async_engine(settings.DATABASE_URI, echo=True)
+async_engine = create_async_engine(db_settings.DATABASE_URI, echo=True)
 async_session_maker = async_sessionmaker(
-    engine,
+    async_engine,
+    class_=AsyncSession,
     expire_on_commit=False,
 )
 

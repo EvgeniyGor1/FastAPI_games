@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles

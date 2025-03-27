@@ -30,12 +30,10 @@ COPY --from=builder /FastAPI_games/.venv /FastAPI_games/.venv
 
 COPY . .
 
-COPY /.env_container /FastAPI_games/.env
-
-RUN mv .env_container .env
+COPY .env_container /FastAPI_games/.env
 
 ENV PATH="/FastAPI_games/.venv/bin:$PATH"
 
 EXPOSE 8000
 
-RUN chmod +x ./src/scripts/start.sh
+RUN chmod +x ./start.sh
