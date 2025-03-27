@@ -35,6 +35,9 @@ async def get_auth_user(
     return user
 
 
+AuthUserDep = Annotated[User, Depends(get_auth_user)]
+
+
 async def get_session_id(request: Request) -> str:
     session_id = request.cookies.get(COOKIE_SESSION_ID_KEY)
 
@@ -46,6 +49,9 @@ async def get_session_id(request: Request) -> str:
         )
 
     return session_id
+
+
+SessionIdDep = Annotated[str, Depends(get_session_user)]
 
 
 async def get_current_session_user(
@@ -62,8 +68,11 @@ async def get_current_session_user(
     return user
 
 
-async def validate_admin(
-    user: Annotated[User, Depends(get_current_session_user)],
+CurrentUserDep = Annotated[User, Depends(get_current_session_user)]
+
+
+async def admin_permission(
+    user: CurrentUserDep,
 ):
 
     if not user.is_superuser:

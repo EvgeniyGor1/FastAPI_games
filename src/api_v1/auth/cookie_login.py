@@ -1,11 +1,14 @@
 from datetime import datetime, timezone, timedelta
 
-from fastapi import APIRouter, Depends, Response, Request
+from fastapi import APIRouter, Response, Request
+from fastapi.params import Depends
 
 from src.api_v1.auth.active_sessions import create_user_session, delete_user_session
-from src.api_v1.auth.deps import get_auth_user, get_current_session_user
+from src.api_v1.auth.deps import AuthUserDep, CurrentUserDep, get_current_session_user
 from src.api_v1.security import COOKIE_SESSION_ID_KEY, COOKIE_MAX_AGE
 from src.models import User
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
 cookie_router = APIRouter(tags=["cookie"])
 
@@ -13,7 +16,7 @@ cookie_router = APIRouter(tags=["cookie"])
 @cookie_router.post("/login-cookie/")
 async def login(
     response: Response,
-    auth_user: User = Depends(get_auth_user),
+    auth_user: AuthUserDep,
 ):
 
     session_id = await create_user_session(auth_user)
@@ -23,15 +26,16 @@ async def login(
         session_id,
         expires=expire_at,
     )
-    return {"result": "Logged"}
+    return {"result": f"Logged, {auth_user.username}"}
 
 
 @cookie_router.get("/me/")
 async def get_current_user(user: User = Depends(get_current_session_user)):
+
     return f"Hello {user.username}"
 
 
-@cookie_router.post("/logout/")
+@cookie_router.post("/me/logout/")
 async def logout(
     response: Response,
     request: Request,
